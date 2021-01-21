@@ -1,34 +1,34 @@
 package com.mercury.datastructure._04_stack;
 
 /**
- * 通过前缀表达式 进行计算
+ * 后缀表达式 实现计算器
  */
-public class PrefixCalculatorDemo {
+public class SuffixCalculatorDemo {
     public static void main(String[] args) throws Exception {
-        PrefixCalculator calculator = new PrefixCalculator();
+        SuffixCalculator calculator = new SuffixCalculator();
         String infixStr = "1+((2+3)*4)-5";
-//        calculator.infix2Prefix(infixStr);
-
+//        calculator.infix2Suffix(infixStr);
         calculator.calculate(infixStr);
     }
 }
 
-class PrefixCalculator {
+class SuffixCalculator {
 
-    StackP valueStack = new StackP(20);
-    StackP operStack = new StackP(20);
+    StackS valueStack = new StackS(20);
+    StackS operStack = new StackS(20);
+
 
     /**
      * 遍历valueStack得到最终值
      * 假设infixStr: 1+((2+3)×4)-5
      */
     public void calculate(String infixStr) throws Exception {
-        // 1、将中缀表达式转换成前缀表达式 ==》 5 4 3 2 + × 1 + -  ==》 5在栈底
-        this.infix2Prefix(infixStr);
+        // 1、将中缀表达式转换成后缀表达式 ==》 1 2 3 + 4 × + 5 -  ==》 1在栈底
+        this.infix2Suffix(infixStr);
 
 
-        // 2、遍历值栈得到字符串数据 ==> “- + 1 × + 2 3 4 5 ==》 反转后，-在栈底
-        StackP reverseStack = this.reverseStack(valueStack);
+        // 2、遍历值栈得到字符串数据 ==> - 5 + * 4 + 3 2 1 ==》 反转后，-在栈底
+        StackS reverseStack = this.reverseStack(valueStack);
 
         // 3、遍历反转的值栈。相当于从右往左读字
         StackP finalStack = new StackP(20);
@@ -39,12 +39,12 @@ class PrefixCalculator {
             if (isCharFlag) {
                 int v1 = finalStack.pop();
                 int v2 = finalStack.pop();
-                // 用v1 运算符 v2
-                int result = this.calNum(v2, v1, curr);
+                // 用v2 运算符 v1
+                int result = this.calNum(v1, v2, curr);
                 finalStack.push(result);
             } else {
                 //判断是否为多个数字
-              finalStack.push(curr);
+                finalStack.push(curr);
             }
         }
         System.out.println("最后的值为：" + finalStack.pop());
@@ -52,81 +52,75 @@ class PrefixCalculator {
 
     }
 
-    private StackP reverseStack(StackP valueStack) throws Exception {
-        StackP stackP = new StackP(20);
+
+    private StackS reverseStack(StackS valueStack) throws Exception {
+        StackS stackS = new StackS(20);
         while (!valueStack.isEmpty()) {
-            stackP.push(valueStack.pop());
+            stackS.push(valueStack.pop());
         }
-        return stackP;
+        return stackS;
     }
 
-
     /**
-     * 中缀转换为前缀表达式
+     * 中缀表达式 转换成 后缀表达式
      */
-    public void infix2Prefix(String infixStr) throws Exception {
-        //从右往左开始扫描
-        String numStr = "";
+    public void infix2Suffix(String infixStr) throws Exception {
+        // 从前往后扫描
         char[] chars = infixStr.toCharArray();
-        for (int i = chars.length - 1; i >= 0; i--) {
+        String numStr = "";
+        for (int i = 0; i < chars.length; i++) {
             char curr = chars[i];
             boolean isCharFlag = this.isOper(curr);
-            //1、如果是数字，加入valueStack 中
-            if (!isCharFlag) {
-                //判断是否为多个数字
+            // 1、如果是数字，加到valueStack中
+            if(!isCharFlag) {
                 numStr += curr;
-                // 如果下一个是字符或者已经到字符串最后一位了，那么这次就把值加到栈中, 否则只拼接数字字符
-                if ((i == 0) || this.isOper(chars[i - 1])) {
+                if ((i == chars.length-1) || this.isOper(chars[i + 1])) {
                     valueStack.push(Integer.parseInt(numStr));
                     numStr = "";
                 }
-
-            } else {
-                //2、如果是操作符
-                //2.1 operStack为空，直接加入
-                if (operStack.isEmpty()) {
+            } else{
+                // 2、如果是字符
+                // 2.1 operStack为空，直接加入
+                if(operStack.isEmpty()) {
                     operStack.push(curr);
                     continue;
                 }
-                //2.2 operStack不为空
-                //2.2.1 如果是括号
-                // )括号，直接加入
-                if (curr == ')') {
+                // 2.2 operStack不为空
+                // 2.2.1 括号
+                // ( 括号，直接加入到operStack
+                if(curr == '(') {
                     operStack.push(curr);
                     continue;
                 }
-                if (curr == '(') {
-                    // (括号，弹出运算符到valueStack中，直到遇到）括号
-
-                    while (true) {
+                // ) 括号，将operStack弹出操作符，直到遇到( ==>将（）都去除了
+                if(curr == ')') {
+                    while(true) {
                         int top = operStack.pop();
-                        if (top == ')') {
+                        if(top == '(') {
                             break;
                         }
-                        valueStack.push(top);
 
+                        valueStack.push(top);
                     }
                     continue;
                 }
 
-                //2.2.2 如果不是括号
-                //优先级大于等于栈顶元素，直接加入
-
-                boolean flag = operStack.priority(curr) >= operStack.priority(operStack.peek());
-                boolean isKh = operStack.peek() == ')';
-                if (flag || isKh) {
+                // 2.2.2 运算符
+                // 【优先级大于栈顶 或者 栈顶为 ( 】==》直接加入operStack
+                boolean priority = operStack.priority(curr) > operStack.priority(operStack.peek());
+                boolean isKh = operStack.peek() == '(';
+                if(priority || isKh) {
                     operStack.push(curr);
                     continue;
                 }
-
-                //优先级小于栈顶元素，弹出运算符到valueStack中，直到优先级大于等于
-                while (true) {
+                // 【优先级小于等于栈顶】 ==》弹出operStack元素，加到valueStack中，直到优先级大于或栈为空
+                while(true) {
                     if(operStack.isEmpty()) {
-                        valueStack.push(curr);
+                        operStack.push(curr);
                         break;
                     }
                     int top = operStack.pop();
-                    if (operStack.priority(curr) >= operStack.priority(top)) {
+                    if(operStack.priority(curr) > operStack.priority(top)) {
                         break;
                     }
                     valueStack.push(top);
@@ -137,8 +131,6 @@ class PrefixCalculator {
         while (!operStack.isEmpty()) {
             valueStack.push(operStack.pop());
         }
-        System.out.println(valueStack);
-        System.out.println(operStack);
 
 
     }
@@ -177,19 +169,21 @@ class PrefixCalculator {
 
         return result;
     }
+
 }
+
 
 
 /**
  * 栈
  */
-class StackP {
+class StackS {
     int size;
     int top;
 
     int[] arr;
 
-    public StackP(int size) {
+    public StackS(int size) {
         this.size = size;
 
         arr = new int[size];
