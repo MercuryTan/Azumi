@@ -113,7 +113,8 @@ class PrefixCalculator {
                 //优先级大于等于栈顶元素，直接加入
 
                 boolean flag = operStack.priority(curr) >= operStack.priority(operStack.peek());
-                if (flag) {
+                boolean isKh = operStack.peek() == ')';
+                if (flag || isKh) {
                     operStack.push(curr);
                     continue;
                 }
@@ -234,7 +235,7 @@ class StackP {
     public int priority(int curr) {
         if (curr == '*' || curr == '/') {
             return 1;
-        } else if (curr == '+' || curr == '-' || curr == '(' || curr == ')') {
+        } else if (curr == '+' || curr == '-') {
             return 0;
         } else {
             return -1;
