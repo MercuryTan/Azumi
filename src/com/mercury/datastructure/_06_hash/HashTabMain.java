@@ -17,6 +17,9 @@ public class HashTabMain {
 
 }
 
+/**
+ * 哈希表
+ */
 class HashTab {
     EmpLinkedList[] empLinkedLists;
     int size;
