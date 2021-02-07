@@ -34,12 +34,13 @@ public class BinaryTreeMain {
         System.out.println("前序：" + node);
 
         node = root.inffixSearch(3);
-        System.out.println("中序：" +node);
+        System.out.println("中序：" + node);
 
         node = root.suffixSearch(3);
-        System.out.println("后序：" +node);
+        System.out.println("后序：" + node);
 
-
+        root.deleteTree(root,3); // 期望结果：5,8,6,9
+        root.prefixTraverse();
     }
 
 }
@@ -236,6 +237,65 @@ class BinaryTree {
         return null;
     }
 
+
+    // ============ 4、二叉树删除 ===========
+
+    /**
+     * !!! 规定：是子节点就直接删除； 如果不是子节点，那么删除左或右子树 !!!
+     *
+     * 步骤：
+     * 1、root节点
+     * // 否则：
+     *
+     * 2、当前节点的左节点是否相等
+     * 3、当前节点的右节点是否相等
+     * 4、递归左子树
+     * 5、递归右子树
+     *
+     * @param root
+     * @param searchData
+     */
+    public BinaryTree deleteTree(BinaryTree root, int searchData) {
+        // 1、判断root节点
+        if (root.data == searchData) {
+            root = null;
+            // 2、否则，是删除子节点
+        } else {
+            root.deleteNode(searchData);
+        }
+
+        return root;
+    }
+
+    /**
+     * 删除节点
+     * @param searchData
+     */
+    private void deleteNode(int searchData) {
+        // 1、从左开始判断
+        if(this.left != null) {
+            if(this.left.data == searchData) {
+                this.left = null;
+                return;
+                // 左子树递归
+            } else {
+                this.left.deleteNode(searchData);
+            }
+
+        }
+
+        //2、从右开始判断
+        if(this.right != null) {
+            if(this.right.data == searchData) {
+                this.right = null;
+                return;
+                // 右子树递归
+            } else {
+                this.right.deleteNode(searchData);
+            }
+
+        }
+    }
 
 
     @Override
