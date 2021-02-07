@@ -27,6 +27,10 @@ public class ThreadedBinaryTreeMain {
         tree.inffixClues(root);
         System.out.println(n4.getLeft()); // 期望为3
         System.out.println(n4.getRight()); //期望为5
+
+        System.out.println("线索化二叉树遍历");
+        tree.inffixTraverse2();
+
     }
 
 }
@@ -57,21 +61,45 @@ class ThreadedBinaryTree {
 
         // 2、线索化当前值
         // 2.1 设置node的前驱节点
-        if(node.left == null) {
+        if (node.left == null) {
             node.left = pre;
             node.setLeftType(1);
         }
 
         // 2.2 !!!! 设置node的后继节点，借助pre来实现 (因为二叉树是单向的，如果要指向父节点，需要借助指针)
-        if(pre != null && pre.right == null) {
+        if (pre != null && pre.right == null) {
             pre.right = node;
             pre.setRightType(1);
         }
         //!!!!!!!! pre 跟着移动
         pre = node;
 
-        // 3、线索化右子树
+        // 3、线索化右子树 遍历
         inffixClues(node.right);
+    }
+
+    /**
+     * 2、 遍历 中序线索化二叉树
+     */
+    public void inffixTraverse2() {
+        Node node = root;
+        while(node != null) {
+            // 左
+            while(node.getLeftType() == 0) {
+                node = node.left;
+            }
+
+            // 当前
+            System.out.println(node);
+
+            // 右==》 打印后继节点
+            while(node.getRightType() == 1) {
+                node = node.getRight();
+                System.out.println(node);
+            }
+            // 找到right节点
+            node = node.getRight();
+        }
     }
 
 
