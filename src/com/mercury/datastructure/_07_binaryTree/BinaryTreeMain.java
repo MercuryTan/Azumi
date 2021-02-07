@@ -105,11 +105,11 @@ class BinaryTree {
     public void inffixTraverse() {
         if (this != null) {
             if (this.left != null) {
-                this.left.prefixTraverse();
+                this.left.inffixTraverse();
             }
             System.out.print(this.data + "\t");
             if (this.right != null) {
-                this.right.prefixTraverse();
+                this.right.inffixTraverse();
             }
         }
 //        System.out.println();
@@ -121,11 +121,11 @@ class BinaryTree {
     public void suffixTraverse() {
         if (this != null) {
             if (this.left != null) {
-                this.left.prefixTraverse();
+                this.left.suffixTraverse();
             }
 
             if (this.right != null) {
-                this.right.prefixTraverse();
+                this.right.suffixTraverse();
             }
 
             System.out.print(this.data + "\t");
