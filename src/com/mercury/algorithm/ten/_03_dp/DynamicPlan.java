@@ -1,5 +1,7 @@
 package com.mercury.algorithm.ten._03_dp;
 
+import static jdk.nashorn.internal.objects.Global.print;
+
 /**
  * dp
  */
@@ -44,20 +46,24 @@ public class DynamicPlan {
                     //上一行的值，比如当前是5金库，10人。那么这里就是 4金库，10人
                     int num1 = preResult[j];
                     // 否则取：  4金库，10-当前5金库所需人数 处的值 + 5金库的产量
-                    int no = j - p[i] < 0 ? 0 : j - p[i];
+                    int n1 = j - p[i];
+                    int no = n1 < 0 ? 0 :  n1;
                     int num2 = preResult[no] + g[i];
                     result[j] = Math.max(num1, num2);
                 }
 
             }
+
+            print(result);
         }
 
+        return result[n];
+    }
 
+    private static void print(int[] result) {
         for (int i : result) {
             System.out.print(i + "\t");
         }
-
-
-        return result[n];
+        System.out.println();
     }
 }
