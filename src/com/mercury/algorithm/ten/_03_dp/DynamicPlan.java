@@ -59,9 +59,11 @@ public class DynamicPlan {
                     //  金矿1需要5人 那么remainPsnNum为5人
                     //  ==> index需要-1 即取index为4的数据
                     int remainPsnNum = totalPsnNum - currentGoldNeedPsn;
-                    int index = (remainPsnNum - 1) < 0 ? 0 : (remainPsnNum - 1);
+                    // index为0 ，说明还有1人
+                    int index = remainPsnNum - 1;
                     // 除i金矿所需的人数外，其余人数在i-1个金矿的产量   + i金矿的产量 == 最终产量
-                    int num2 = preResult[index] + g[i];
+                    int num2 = index >= 0 ? preResult[index] + g[i] : g[i];
+
                     result[j] = Math.max(preGold, num2);
                 }
 
